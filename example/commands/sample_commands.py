@@ -96,7 +96,4 @@ class SuperCommand:
 
     @command
     def do_stuff(self, stuff: int):
-        """
-        doing stuff
-        """
         cprint("stuff={}, shared={}".format(stuff, self.shared))

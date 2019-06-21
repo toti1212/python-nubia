@@ -64,6 +64,7 @@ from collections import namedtuple, OrderedDict
 from collections.abc import Container
 from functools import partial
 from inspect import ismethod, isclass
+from termcolor import cprint
 
 from nubia.internal.helpers import (
     get_arg_spec,
@@ -330,6 +331,10 @@ def inspect_object(obj, accept_bound_methods=False):
             if not callable(candidate):  # avoid e.g. properties
                 continue
             metadata = inspect_object(candidate, accept_bound_methods=True)
+            if not metadata.command.help:  # ignore subcommands without docstring
+                cprint("The sub-command {} does not have description.".format(
+                    metadata.command.name), "yellow")
+                continue
             if metadata.command:
                 result["subcommands"].append((attr, metadata))
 

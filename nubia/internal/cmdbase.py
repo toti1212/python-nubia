@@ -169,7 +169,7 @@ class AutoCommand(Command):
                 _sub_name = inspection.command.name
                 self._commands_completer.words.append(_sub_name)
                 self._commands_completer.meta_dict[_sub_name] = dedent(
-                    inspection.command.help or ""
+                    inspection.command.help
                 ).strip()
                 self._subcommand_names.append(_sub_name)
 
@@ -414,7 +414,11 @@ class AutoCommand(Command):
 
     def _get_subcommands(self) -> Iterable[str]:
         assert self.super_command
-        return [inspection.command.name for _, inspection in self.metadata.subcommands]
+        return [
+            inspection.command.name
+            for _, inspection in self.metadata.subcommands
+            if inspection.command.help
+        ]
 
     def _kwargs_for_fn(self, fn, args):
         return {

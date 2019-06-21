@@ -8,8 +8,9 @@
 #
 
 import unittest
-
+import sys
 from nubia import command
+from nubia.internal.helpers import catchall
 from util import TestShell
 
 
@@ -79,4 +80,29 @@ class SuperCommandSpecTest(unittest.TestCase):
                 "test_shell super-command sub-command "
                 "--arg1=giza --arg2=22 --shared=15"
             ),
+        )
+
+    def test_super_no_docstring(self):
+
+        @command
+        class SuperCommand:
+            "SuperHelp"
+
+            @command
+            def another_command(self, arg1: str):
+                "AnotherHelp"
+                return "Bye {}".format(arg1)
+
+            @command
+            def sub_command(self, arg1: str):
+                return "Hi {}".format(arg1)
+
+        shell = TestShell(commands=[SuperCommand])
+        
+        with self.assertRaises(SystemExit):
+            shell.run_cli_line("test_shell super-command sub-command --arg1=human")
+
+        self.assertEqual(
+            "Bye Tom",
+            shell.run_cli_line("test_shell super-command another_command --arg1=human"),
         )
